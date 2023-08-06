@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+// import axios from 'axios';
+// import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 function Search() {
@@ -11,13 +12,17 @@ function Search() {
   const [addCountry, setAddCountry] = useState("");
   const [addCity, setAddCity] = useState("");
 
+  const navigate = useNavigate();
+
   const onClickSendText = () => {
-    setAddCountry(country);
-    setAddCity(city);
-    setCountry("");
-    setCity("");
-    console.log("Inputted country is " + country + " and inputted city is " + city);
+    // setAddCountry(country);
+    // setAddCity(city);
+    // setCountry("");
+    // setCity("");
+    //console.log("Inputted country is " + country + " and inputted city is " + city);
+    navigate("/result", { state: { country: "Tokyo", city: city } });
   }
+
 
 
   // handleSubmit = async (event) => {
@@ -46,7 +51,6 @@ function Search() {
 
   //   window.location("/result");
 
-
   // }
 
 
@@ -56,13 +60,14 @@ function Search() {
       <form>
         <p>Country Name: <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="Country Name" /></p>
         <p>City Name: <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="City Name" /></p>
-        <button type="button" onClick={onClickSendText} component={Link} to="/result">Submit</button>
+        {/* <Link to={{ pathname: "/result", state: {country: country, city: city} }}> */}
+        {/* Linkを使用した値の渡し方に関してはhttps://bunsugi.com/react-page-state/　このサイトを参照したが、記述方法が変わったのかうまく値を渡せなかった */}
+        <button type="button" onClick={onClickSendText}>Submit</button>
+        {/* </Link> */}
       </form>
       <br></br>
       <div>Interactive Country: {country}</div>
       <div>Interactive City: {city}</div>
-      <div>Result of Country: {addCountry}</div>
-      <div>Result of City: {addCity}</div>
     </div>
   )
 
@@ -71,6 +76,9 @@ function Search() {
 export default Search;
 
 
-// onChange={this.handleCountry.bind(this)}
-// onChange={this.handleCity.bind(this)}
-// onClick={this.handleSubmit.bind(this)}
+// 　　　　　2時間くらいずっと、Linkタグを設定してページ遷移できるようになったのはいいがどのように値を遷移先に渡せるのかで格闘していた
+//         →https://zenn.dev/horisan/articles/2aeaf0bd3fb70f#%E8%A3%9C%E8%B6%B3というサイトで有益な情報が載っていたので
+//         その通りにuseNavigate()を使用しても遷移先でTypeError: Cannot read properties of null (reading ‘country’)
+//         というエラーが出ており情報が渡せなかった
+//         →よくよくみてみると、useNavigate()のみで画面を遷移できるはずなのに、元々のLinkタグがずっと残っており、こちらが優先的に適用されてしまっていた
+//         →Linkタグを削除するとうまく値が渡せた！！
