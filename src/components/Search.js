@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// import axios from 'axios';
+import axios from 'axios';
 // import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,7 +20,24 @@ function Search() {
     // setCountry("");
     // setCity("");
     //console.log("Inputted country is " + country + " and inputted city is " + city);
-    navigate("/result", { state: { country: "Tokyo", city: city } });
+
+    axios.post('http://127.0.0.1:5000', {
+      country: country,
+      city: city,
+    })
+      .then(function (response) {
+        console.log("Responsed by Flask")
+        //console.log("Country is : " + response.data.country);
+        const resultCountry = response.data.country;
+        const resultCity = response.data.city;
+        navigate("/result", { state: { country: resultCountry, city: resultCity } });
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+
+
   }
 
 
