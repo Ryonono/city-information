@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 // import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
 
 
 function Search() {
@@ -14,14 +15,22 @@ function Search() {
 
   const navigate = useNavigate();
 
-  const onClickSendText = () => {
+
+  // 関数自体をasyncにし、axiosにawaitを用いることで、非同期処理を同期的にこなすことを実現している（async/await構文）
+  // ボタンをクリックすると同時にloadingページにとばし、awaitでバックエンド側の処理を待ってから再びnavigateでresultページに飛ばすような設定にしてうまくできたが、
+  // 実はnavigate自体がバックエンド側からstateを受け取るまで自動的に同期処理を行なっている形になっていたので、async/await構文は使用しなくても正常に動きそう
+
+  async function onClickSendText() {
+
+    navigate("/loading");
+
     // setAddCountry(country);
     // setAddCity(city);
     // setCountry("");
     // setCity("");
     //console.log("Inputted country is " + country + " and inputted city is " + city);
 
-    axios.post('http://127.0.0.1:5000', {
+    await axios.post('http://127.0.0.1:5000', {
       country: country,
       city: city,
     })
@@ -34,14 +43,12 @@ function Search() {
       })
       .catch(function (error) {
         console.log(error);
-      });
-
-
+      })
 
   }
 
 
-
+  // 下記コードはうまくいかなかった死骸
   // handleSubmit = async (event) => {
   //   event.preventDefault();
 
@@ -75,16 +82,18 @@ function Search() {
     <div>
       <h3>Please enter country name and city name. We will provide the information about the city you entered.</h3>
       <form>
+        {/* inputタグに入力された値を逐一更新するために、onChange={(e) => setCity(e.target.value)}という記述を使用することが重要！ */}
         <p>Country Name: <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="Country Name" /></p>
         <p>City Name: <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="City Name" /></p>
         {/* <Link to={{ pathname: "/result", state: {country: country, city: city} }}> */}
         {/* Linkを使用した値の渡し方に関してはhttps://bunsugi.com/react-page-state/　このサイトを参照したが、記述方法が変わったのかうまく値を渡せなかった */}
-        <button type="button" onClick={onClickSendText}>Submit</button>
+        <Button onClick={onClickSendText}>Submit</Button>
         {/* </Link> */}
       </form>
       <br></br>
       <div>Interactive Country: {country}</div>
       <div>Interactive City: {city}</div>
+
     </div>
   )
 
